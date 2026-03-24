@@ -1,7 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 
+// ─── CONFIGURATION ────────────────────────────────────────────────────────
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+// Ye rahi woh missing link! Render ki URL yahan se pick hogi
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
@@ -16,16 +20,19 @@ export async function apiFetch<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const token = await getToken()
-  const res = await fetch(`/api${path}`, {
+  
+  // AB YEH RENDER WALI URL PE JAYEGA (Vercel pe nahi)
+  const res = await fetch(`${API_BASE_URL}/api${path}`, {
     ...options,
     headers: {
       ...(options.headers || {}),
-      Authorization: `Bearer ${token}`,
+      'Authorization': `Bearer ${token}`,
       ...(!options.body || options.body instanceof FormData
         ? {}
         : { 'Content-Type': 'application/json' }),
     },
   })
+
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }))
     throw new Error(err.error || 'Request failed')
