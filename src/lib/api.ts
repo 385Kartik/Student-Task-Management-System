@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-// Ye rahi woh missing link! Render ki URL yahan se pick hogi
+// Render ki URL configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
@@ -21,7 +21,6 @@ export async function apiFetch<T>(
 ): Promise<T> {
   const token = await getToken()
   
-  // AB YEH RENDER WALI URL PE JAYEGA (Vercel pe nahi)
   const res = await fetch(`${API_BASE_URL}/api${path}`, {
     ...options,
     headers: {
@@ -42,8 +41,14 @@ export async function apiFetch<T>(
 
 // ─── Auth helpers ─────────────────────────────────────────────────────────
 export const auth = {
-  signUp: (email: string, password: string, name: string) =>
-    supabase.auth.signUp({ email, password, options: { data: { name } } }),
+  signUp: (email: string, password: string, metadata: { name: string, school_name: string, contact_number: string }) =>
+    supabase.auth.signUp({ 
+      email, 
+      password, 
+      options: { 
+        data: metadata
+      } 
+    }),
 
   signIn: (email: string, password: string) =>
     supabase.auth.signInWithPassword({ email, password }),
