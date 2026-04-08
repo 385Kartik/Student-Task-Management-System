@@ -300,7 +300,7 @@ export default function StudentDashboard({ user }: Props) {
           <div style={{ display: 'flex', gap: '10px' }}>
             <button 
               className="btn btn-secondary btn-sm" 
-              onClick={() => window.open('/clue.jpg', '_blank')}
+              onClick={() => window.open('https://drive.google.com/file/d/1t-73Se7T9lqcWYDSo23IHvDfoFiT8Kl-/view?usp=drivesdk', '_blank')}
             >
               <span>🖼️</span> Clue
             </button>
