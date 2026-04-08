@@ -285,7 +285,7 @@ export default function StudentDashboard({ user }: Props) {
 
       {/* ── Main Content ── */}
       <main className="dash-main">
-        <div className="dash-header">
+                <div className="dash-header">
           <div>
             <h1 className="dash-title">
               {activeSection === 'tasks' ? 'Weekly Tasks' : 'Week 4: Projects'}
@@ -296,10 +296,20 @@ export default function StudentDashboard({ user }: Props) {
                 : 'Submit 1 mini + 1 major project to earn your full certificate'}
             </p>
           </div>
-          <button className="btn btn-secondary btn-sm" onClick={loadData}>
-            <span>↺</span> Refresh
-          </button>
+          
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button 
+              className="btn btn-secondary btn-sm" 
+              onClick={() => window.open('/clue.jpg', '_blank')}
+            >
+              <span>🖼️</span> Clue
+            </button>
+            <button className="btn btn-secondary btn-sm" onClick={loadData}>
+              <span>↺</span> Refresh
+            </button>
+          </div>
         </div>
+
 
         {/* ── TASKS ── */}
         {activeSection === 'tasks' && (
