@@ -2,6 +2,22 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { auth } from '@/lib/api'
 
+const EyeIcon = ({ show }: { show: boolean }) => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block', opacity: 0.7 }}>
+    {show ? (
+      <>
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+      </>
+    ) : (
+      <>
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </>
+    )}
+  </svg>
+)
+
 export default function AuthPage() {
   const [tab, setTab] = useState<'login' | 'signup'>('login')
   const [loading, setLoading] = useState(false)
@@ -11,11 +27,13 @@ export default function AuthPage() {
   // Login state
   const [loginEmail, setLoginEmail] = useState('')
   const [loginPassword, setLoginPassword] = useState('')
+  const [showLoginPassword, setShowLoginPassword] = useState(false)
 
   // Signup state (Updated with new fields)
   const [signupName, setSignupName] = useState('')
   const [signupEmail, setSignupEmail] = useState('')
   const [signupPassword, setSignupPassword] = useState('')
+  const [showSignupPassword, setShowSignupPassword] = useState(false)
   const [schoolName, setSchoolName] = useState('')      // ✨ New
   const [contactNumber, setContactNumber] = useState('') // ✨ New
 
@@ -32,7 +50,7 @@ export default function AuthPage() {
     setLoading(true)
     
     try {
-      const { error } = await auth.signIn(loginEmail, loginPassword)
+      const { error } = await auth.signIn(loginEmail.trim(), loginPassword)
       if (error) {
         setError(error.message)
       } else {
@@ -60,7 +78,7 @@ export default function AuthPage() {
     
     try {
       // ✨ Passing data as an object to metadata
-      const { error } = await auth.signUp(signupEmail, signupPassword, {
+      const { error } = await auth.signUp(signupEmail.trim(), signupPassword, {
         name: signupName,
         school_name: schoolName,
         contact_number: contactNumber
@@ -133,11 +151,21 @@ export default function AuthPage() {
               </div>
               <div className="form-group">
                 <label>Password</label>
-                <input
-                  type="password" required placeholder="••••••••"
-                  value={loginPassword} onChange={e => setLoginPassword(e.target.value)}
-                  disabled={loading}
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showLoginPassword ? "text" : "password"} required placeholder="••••••••"
+                    value={loginPassword} onChange={e => setLoginPassword(e.target.value)}
+                    disabled={loading}
+                  />
+                  <button 
+                    type="button" 
+                    className="password-toggle"
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    tabIndex={-1}
+                  >
+                    <EyeIcon show={showLoginPassword} />
+                  </button>
+                </div>
               </div>
               <button type="submit" className="btn btn-primary btn-lg" style={{width:'100%'}} disabled={loading}>
                 {loading ? 'Logging in...' : 'Login →'}
@@ -187,11 +215,21 @@ export default function AuthPage() {
               </div>
               <div className="form-group">
                 <label>Password</label>
-                <input
-                  type="password" required placeholder="Min 8 chars, 1 Capital, 1 Special"
-                  value={signupPassword} onChange={e => setSignupPassword(e.target.value)}
-                  disabled={loading}
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showSignupPassword ? "text" : "password"} required placeholder="Min 8 chars, 1 Capital, 1 Special"
+                    value={signupPassword} onChange={e => setSignupPassword(e.target.value)}
+                    disabled={loading}
+                  />
+                  <button 
+                    type="button" 
+                    className="password-toggle"
+                    onClick={() => setShowSignupPassword(!showSignupPassword)}
+                    tabIndex={-1}
+                  >
+                    <EyeIcon show={showSignupPassword} />
+                  </button>
+                </div>
               </div>
               <button type="submit" className="btn btn-primary btn-lg" style={{width:'100%'}} disabled={loading}>
                 {loading ? 'Creating account...' : 'Create Account →'}
@@ -281,6 +319,14 @@ export default function AuthPage() {
         }
         .auth-divider span { background: var(--surface); padding: 0 12px; position: relative; }
         .auth-form { display: flex; flex-direction: column; gap: 16px; }
+        .password-input-wrapper { position: relative; display: flex; align-items: center; }
+        .password-input-wrapper input { width: 100%; padding-right: 40px; box-sizing: border-box; }
+        .password-toggle {
+          position: absolute; right: 8px; background: transparent; border: none;
+          color: var(--text2); cursor: pointer; padding: 4px; display: flex;
+          align-items: center; justify-content: center; border-radius: 4px;
+        }
+        .password-toggle:hover { background: var(--bg3); color: var(--text); }
         .auth-message {
           padding: 10px 14px; border-radius: var(--radius-sm);
           font-size: 13px; margin-bottom: 4px;
